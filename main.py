@@ -185,6 +185,13 @@ def show_dashboard():
     st.title("Dashboard")
     incidents = load_incidents()
     
+    # Add backup button
+    if st.sidebar.button("Backup Data"):
+        if backup_data():
+            st.sidebar.success("Backup created successfully!")
+        else:
+            st.sidebar.error("Backup failed!")
+    
     col1, col2, col3 = st.columns(3)
     
     with col1:

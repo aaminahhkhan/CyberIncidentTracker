@@ -9,6 +9,14 @@ def load_users():
     if not os.path.exists('data/users.csv'):
         df = pd.DataFrame(columns=['username', 'password', 'is_admin'])
         df.to_csv('data/users.csv', index=False)
+        # Create default admin user
+        from auth import hash_password
+        admin_user = {
+            'username': 'admin',
+            'password': hash_password('admin'),
+            'is_admin': True
+        }
+        save_user(admin_user)
     return pd.read_csv('data/users.csv')
 
 def save_user(user):
