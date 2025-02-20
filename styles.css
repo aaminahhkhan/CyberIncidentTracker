@@ -1,0 +1,90 @@
+
+/* Global Styles */
+.stApp {
+    background-color: #f8f9fa;
+}
+
+/* Header Styles */
+h1 {
+    color: #1E3D59;
+    padding: 20px 0;
+    border-bottom: 2px solid #17A2B8;
+}
+
+/* Metric Card Styles */
+.metric-container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin: 10px 0;
+}
+
+.metric-value {
+    font-size: 24px;
+    font-weight: bold;
+    color: #17A2B8;
+}
+
+/* Form Styles */
+.stTextInput, .stSelectbox, .stTextArea {
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+.stButton > button {
+    background-color: #17A2B8;
+    color: white;
+    border-radius: 5px;
+    padding: 10px 20px;
+    border: none;
+    transition: background-color 0.3s;
+}
+
+.stButton > button:hover {
+    background-color: #138496;
+}
+
+/* Incident Card Styles */
+.incident-card {
+    background-color: white;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 4px solid #17A2B8;
+    margin: 10px 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* Status Tags */
+.status-open {
+    background-color: #dc3545;
+    color: white;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+}
+
+.status-in-progress {
+    background-color: #ffc107;
+    color: black;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+}
+
+.status-closed {
+    background-color: #28a745;
+    color: white;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+}
+
+/* Chart Styles */
+.plotly-chart {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
