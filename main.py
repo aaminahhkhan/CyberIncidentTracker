@@ -245,7 +245,11 @@ def show_incidents(show_all=False):
 
     incidents = load_incidents()
     if not show_all:
-        incidents = incidents[incidents['reported_by'] == st.session_state.username]
+        # Show incidents either reported by or assigned to the user
+        incidents = incidents[
+            (incidents['reported_by'] == st.session_state.username) |
+            (incidents['assigned_to'] == st.session_state.username)
+        ]
 
     if len(incidents) == 0:
         st.info("No incidents found")
@@ -271,19 +275,26 @@ def show_incidents(show_all=False):
                 new_status = st.selectbox(
                     "Update Status",
                     ["Open", "In Progress", "Closed"],
-                    key=f"status_{incident['id']}"
+                    key=f"status_{incident['id']}",
+                    index=["Open", "In Progress", "Closed"].index(incident['status'])
                 )
 
+                users = load_users()
+                user_list = [""] + list(users['username'])
+                current_assignment_index = user_list.index(incident['assigned_to']) if incident['assigned_to'] in user_list else 0
+                
                 new_assignment = st.selectbox(
                     "Assign To",
-                    [""] + list(load_users()['username']),
-                    key=f"assign_{incident['id']}"
+                    user_list,
+                    key=f"assign_{incident['id']}",
+                    index=current_assignment_index
                 )
 
                 if st.button("Update", key=f"update_{incident['id']}"):
-                    incident['status'] = new_status
-                    incident['assigned_to'] = new_assignment
-                    update_incident(incident)
+                    updated_incident = incident.copy()
+                    updated_incident['status'] = new_status
+                    updated_incident['assigned_to'] = new_assignment
+                    update_incident(updated_incident)
                     st.success("Incident updated successfully")
                     st.rerun()
 
