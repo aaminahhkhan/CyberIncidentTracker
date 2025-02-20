@@ -1,2 +1,3 @@
 username,password,is_admin
-admin,8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918,true
+admin,8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918,True
+lonerr,451907fc75ca3a38ba5b6bf8fad7f512816652f095333dd780e323da5dde6689,False

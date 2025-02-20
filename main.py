@@ -33,7 +33,7 @@ def login_page():
                 st.session_state.authenticated = True
                 st.session_state.username = username
                 st.success("Login successful!")
-                st.experimental_rerun()
+                st.rerun()
             else:
                 st.error("Invalid credentials")
     
@@ -56,7 +56,7 @@ def main_page():
     if st.sidebar.button("Logout"):
         st.session_state.authenticated = False
         st.session_state.username = None
-        st.experimental_rerun()
+        st.rerun()
     
     # Main navigation
     page = st.sidebar.radio(
@@ -173,7 +173,7 @@ def show_incidents(show_all=False):
                     incident['assigned_to'] = new_assignment
                     update_incident(incident)
                     st.success("Incident updated successfully")
-                    st.experimental_rerun()
+                    st.rerun()
 
 def show_reports():
     st.title("Reports")
