@@ -184,16 +184,16 @@ def submit_report():
 def show_dashboard():
     st.title("Dashboard")
     incidents = load_incidents()
-    
+
     # Add backup button
     if st.sidebar.button("Backup Data"):
         if backup_data():
             st.sidebar.success("Backup created successfully!")
         else:
             st.sidebar.error("Backup failed!")
-    
+
     col1, col2, col3 = st.columns(3)
-    
+
     with col1:
         st.metric("Total Incidents", len(incidents))
     with col2:
@@ -202,26 +202,26 @@ def show_dashboard():
     with col3:
         closed_incidents = len(incidents[incidents['status'] == 'Closed'])
         st.metric("Closed Incidents", closed_incidents)
-    
+
     # Status distribution chart
     fig = px.pie(incidents, names='status', title='Incident Status Distribution')
     st.plotly_chart(fig)
 
 def submit_incident():
     st.title("Submit New Incident")
-    
+
     incident_type = st.selectbox(
         "Incident Type",
         ["Malware", "Phishing", "Data Breach", "DDoS", "Other"]
     )
-    
+
     severity = st.select_slider(
         "Severity",
         options=["Low", "Medium", "High", "Critical"]
     )
-    
+
     description = st.text_area("Description")
-    
+
     if st.button("Submit"):
         incident_id = generate_incident_id()
         new_incident = {
@@ -229,57 +229,57 @@ def submit_incident():
             'type': incident_type,
             'severity': severity,
             'description': description,
-            'status': 'Open',
+            'status': 'Pending', # Changed initial status to 'Pending'
             'reported_by': st.session_state.username,
             'reported_date': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             'assigned_to': '',
             'resolution': ''
         }
-        
+
         save_incident(new_incident)
         st.success(f"Incident submitted successfully. Incident ID: {incident_id}")
         send_notification(f"New incident reported: {incident_id}")
 
 def show_incidents(show_all=False):
     st.title("Incident Management")
-    
+
     incidents = load_incidents()
     if not show_all:
         incidents = incidents[incidents['reported_by'] == st.session_state.username]
-    
+
     if len(incidents) == 0:
         st.info("No incidents found")
         return
-    
+
     for _, incident in incidents.iterrows():
         with st.expander(f"Incident {incident['id']} - {incident['type']} ({incident['status']})"):
             col1, col2 = st.columns(2)
-            
+
             with col1:
                 st.write(f"**Severity:** {incident['severity']}")
                 st.write(f"**Reported By:** {incident['reported_by']}")
                 st.write(f"**Date:** {incident['reported_date']}")
-            
+
             with col2:
                 st.write(f"**Status:** {incident['status']}")
                 st.write(f"**Assigned To:** {incident['assigned_to']}")
-            
+
             st.write("**Description:**")
             st.write(incident['description'])
-            
+
             if is_admin(st.session_state.username):
                 new_status = st.selectbox(
                     "Update Status",
                     ["Open", "In Progress", "Closed"],
                     key=f"status_{incident['id']}"
                 )
-                
+
                 new_assignment = st.selectbox(
                     "Assign To",
                     [""] + list(load_users()['username']),
                     key=f"assign_{incident['id']}"
                 )
-                
+
                 if st.button("Update", key=f"update_{incident['id']}"):
                     incident['status'] = new_status
                     incident['assigned_to'] = new_assignment
@@ -289,18 +289,18 @@ def show_incidents(show_all=False):
 
 def show_reports():
     st.title("Reports")
-    
+
     incidents = load_incidents()
-    
+
     # Time series of incidents
     daily_incidents = incidents.groupby('reported_date').size().reset_index(name='count')
     fig1 = px.line(daily_incidents, x='reported_date', y='count', title='Incidents Over Time')
     st.plotly_chart(fig1)
-    
+
     # Severity distribution
     fig2 = px.bar(incidents, x='severity', title='Incidents by Severity')
     st.plotly_chart(fig2)
-    
+
     # Type distribution
     fig3 = px.bar(incidents, x='type', title='Incidents by Type')
     st.plotly_chart(fig3)
@@ -309,7 +309,7 @@ def user_management():
     if not is_admin(st.session_state.username):
         st.error("Unauthorized access")
         return
-    
+
     st.title("User Management")
     users = load_users()
     st.dataframe(users[['username', 'is_admin']])
