@@ -48,5 +48,8 @@ def update_incident(incident):
     """Update an existing incident"""
     incidents = load_incidents()
     idx = incidents.index[incidents['id'] == incident['id']].tolist()[0]
-    incidents.iloc[idx] = incident
+    
+    for column in incidents.columns:
+        incidents.at[idx, column] = incident[column]
+        
     incidents.to_csv('data/incidents.csv', index=False)
