@@ -182,16 +182,10 @@ def submit_report():
             send_notification(f"New detailed report submitted: {incident_id}")
 
 def show_dashboard():
-    st.title("Dashboard")
+    st.markdown("<h1 style='text-align: center;'>Security Incident Dashboard</h1>", unsafe_allow_html=True)
     incidents = load_incidents()
 
-    # Add backup button
-    if st.sidebar.button("Backup Data"):
-        if backup_data():
-            st.sidebar.success("Backup created successfully!")
-        else:
-            st.sidebar.error("Backup failed!")
-
+    st.markdown("---")
     col1, col2, col3 = st.columns(3)
 
     with col1:
