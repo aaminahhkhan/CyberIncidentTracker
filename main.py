@@ -182,20 +182,69 @@ def submit_report():
             send_notification(f"New detailed report submitted: {incident_id}")
 
 def show_dashboard():
-    st.markdown("<h1 style='text-align: center;'>Security Incident Dashboard</h1>", unsafe_allow_html=True)
+    st.markdown(
+        """
+        <h1 style='text-align: center; color: #1E88E5; padding: 20px 0;'>
+            Security Incident Dashboard
+        </h1>
+        """, 
+        unsafe_allow_html=True
+    )
+    
     incidents = load_incidents()
 
-    st.markdown("---")
-    col1, col2, col3 = st.columns(3)
+    # Metrics in a single row with custom styling
+    st.markdown(
+        """
+        <style>
+        .metric-row {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 10px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
 
+    col1, col2, col3, col4 = st.columns(4)
+    
     with col1:
-        st.metric("Total Incidents", len(incidents))
+        st.metric(
+            "Total Incidents",
+            len(incidents),
+            delta=None,
+            help="Total number of reported incidents"
+        )
+    
     with col2:
         open_incidents = len(incidents[incidents['status'] == 'Open'])
-        st.metric("Open Incidents", open_incidents)
+        st.metric(
+            "Open",
+            open_incidents,
+            delta=None,
+            help="Incidents requiring attention"
+        )
+    
     with col3:
+        in_progress = len(incidents[incidents['status'] == 'In Progress'])
+        st.metric(
+            "In Progress",
+            in_progress,
+            delta=None,
+            help="Incidents being worked on"
+        )
+    
+    with col4:
         closed_incidents = len(incidents[incidents['status'] == 'Closed'])
-        st.metric("Closed Incidents", closed_incidents)
+        st.metric(
+            "Closed",
+            closed_incidents,
+            delta=None,
+            help="Resolved incidents"
+        )
 
     # Status distribution chart
     fig = px.pie(incidents, names='status', title='Incident Status Distribution')
