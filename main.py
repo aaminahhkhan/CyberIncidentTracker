@@ -201,7 +201,14 @@ def submit_report():
             
             send_notification(f"New detailed report submitted: {incident_id}")
 
+def check_admin_notifications():
+    if is_admin(st.session_state.username):
+        notifications = get_admin_notifications()
+        for notif in notifications:
+            st.toast(f"📝 {notif['message']}")
+
 def show_dashboard():
+    check_admin_notifications()
     st.markdown(
         """
         <h1 style='text-align: center; color: #1E88E5; padding: 20px 0;'>

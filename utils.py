@@ -7,9 +7,36 @@ def generate_incident_id():
     return f"INC-{uuid.uuid4().hex[:8].upper()}"
 
 def send_notification(message):
-    """Send a notification (placeholder for real implementation)"""
+    """Send a notification across sessions"""
+    # Show toast in current session
     st.toast(message)
+    
+    # Save notification for admin
+    notifications_file = 'data/notifications.csv'
+    if not os.path.exists(notifications_file):
+        pd.DataFrame(columns=['timestamp', 'message', 'read']).to_csv(notifications_file, index=False)
+    
+    notifications = pd.read_csv(notifications_file)
+    new_notification = pd.DataFrame([{
+        'timestamp': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        'message': message,
+        'read': False
+    }])
+    notifications = pd.concat([notifications, new_notification], ignore_index=True)
+    notifications.to_csv(notifications_file, index=False)
     return True
+
+def get_admin_notifications():
+    """Get unread notifications for admin"""
+    notifications_file = 'data/notifications.csv'
+    if not os.path.exists(notifications_file):
+        return []
+    notifications = pd.read_csv(notifications_file)
+    unread = notifications[~notifications['read']].to_dict('records')
+    # Mark as read
+    notifications['read'] = True
+    notifications.to_csv(notifications_file, index=False)
+    return unread
 
 def format_datetime(dt):
     """Format datetime for display"""
