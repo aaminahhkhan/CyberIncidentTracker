@@ -1,19 +1,13 @@
-id,type,severity,description,status,reported_by,reported_date,assigned_to,resolution,threat_intel
+id,type,severity,description,status,reported_by,reported_date,assigned_to,resolution
 INC-6D5C9E73,Malware,Medium,"Description: uh hm hejwrhkjwe
 
                 Business Impact: much
 
                 Affected Systems: Data Storage
-                Indicators: Unusual Login Attempts",Open,amina,2025-02-20 04:34:28,lonerr,,
+                Indicators: Unusual Login Attempts",Open,amina,2025-02-20 04:34:28,lonerr,
 INC-22352BC9,Data Breach,Critical,"Description: jsahdkjashdkajshdk
 
                 Business Impact: ksjalksdjlask
 
                 Affected Systems: Mobile Devices
-                Indicators: System Alerts, Unusual Login Attempts",Open,amina,2025-02-20 05:20:09,lonerr,,
-INC-EBB42CBF,Malware,Medium,"Description: Multiple failed login attempts from 192.168.1.1
-
-                Business Impact: jkjkj
-
-                Affected Systems: Data Storage
-                Indicators: Modified Files",Open,amina,2025-02-20 05:52:39,,,{}
+                Indicators: System Alerts, Unusual Login Attempts",Open,amina,2025-02-20 05:20:09,,
