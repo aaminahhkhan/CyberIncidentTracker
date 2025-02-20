@@ -1,10 +1,11 @@
 import streamlit as st
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, timedelta
 import plotly.express as px
+import plotly.graph_objects as go
 from auth import check_password, create_user, is_admin
 from database import load_incidents, save_incident, update_incident, load_users
-from utils import generate_incident_id, send_notification
+from utils import generate_incident_id, send_notification, format_datetime
 
 # Page configuration
 st.set_page_config(
@@ -21,13 +22,13 @@ if 'username' not in st.session_state:
 
 def login_page():
     st.title("🛡️ Cybersecurity Incident Management")
-    
+
     tab1, tab2 = st.tabs(["Login", "Register"])
-    
+
     with tab1:
         username = st.text_input("Username", key="login_username")
         password = st.text_input("Password", type="password", key="login_password")
-        
+
         if st.button("Login"):
             if check_password(username, password):
                 st.session_state.authenticated = True
@@ -36,12 +37,12 @@ def login_page():
                 st.rerun()
             else:
                 st.error("Invalid credentials")
-    
+
     with tab2:
         new_username = st.text_input("Username", key="reg_username")
         new_password = st.text_input("Password", type="password", key="reg_password")
         confirm_password = st.text_input("Confirm Password", type="password")
-        
+
         if st.button("Register"):
             if new_password != confirm_password:
                 st.error("Passwords don't match")
@@ -50,31 +51,135 @@ def login_page():
             else:
                 st.error("Username already exists")
 
-def main_page():
-    st.sidebar.title(f"Welcome, {st.session_state.username}")
-    
-    if st.sidebar.button("Logout"):
-        st.session_state.authenticated = False
-        st.session_state.username = None
-        st.rerun()
-    
-    # Main navigation
-    page = st.sidebar.radio(
-        "Navigation",
-        ["Dashboard", "Submit Incident", "My Incidents", "Reports"] if not is_admin(st.session_state.username)
-        else ["Dashboard", "All Incidents", "User Management", "Reports"]
-    )
-    
-    if page == "Dashboard":
-        show_dashboard()
-    elif page == "Submit Incident":
-        submit_incident()
-    elif page == "My Incidents" or page == "All Incidents":
-        show_incidents(show_all=page=="All Incidents")
-    elif page == "User Management":
-        user_management()
-    elif page == "Reports":
-        show_reports()
+def show_user_dashboard():
+    st.title("My Dashboard")
+    incidents = load_incidents()
+    user_incidents = incidents[incidents['reported_by'] == st.session_state.username]
+
+    # Summary metrics
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        st.metric("Total Reports", len(user_incidents))
+    with col2:
+        open_incidents = len(user_incidents[user_incidents['status'] == 'Open'])
+        st.metric("Open", open_incidents)
+    with col3:
+        in_progress = len(user_incidents[user_incidents['status'] == 'In Progress'])
+        st.metric("In Progress", in_progress)
+    with col4:
+        closed = len(user_incidents[user_incidents['status'] == 'Closed'])
+        st.metric("Closed", closed)
+
+    # Recent activity
+    st.subheader("Recent Activity")
+    recent_incidents = user_incidents.sort_values('reported_date', ascending=False).head(5)
+    if not recent_incidents.empty:
+        for _, incident in recent_incidents.iterrows():
+            with st.expander(f"{incident['type']} - {incident['reported_date']}"):
+                st.write(f"**Status:** {incident['status']}")
+                st.write(f"**Severity:** {incident['severity']}")
+                st.write(f"**Description:** {incident['description']}")
+    else:
+        st.info("No recent activity")
+
+    # Activity timeline
+    st.subheader("Activity Timeline")
+    if not user_incidents.empty:
+        fig = go.Figure()
+        for severity in ['Low', 'Medium', 'High', 'Critical']:
+            severity_data = user_incidents[user_incidents['severity'] == severity]
+            if not severity_data.empty:
+                fig.add_trace(go.Scatter(
+                    x=pd.to_datetime(severity_data['reported_date']),
+                    y=[severity] * len(severity_data),
+                    mode='markers',
+                    name=severity,
+                    marker=dict(
+                        size=12,
+                        symbol='circle'
+                    )
+                ))
+        fig.update_layout(
+            title="Incident Timeline by Severity",
+            yaxis_title="Severity Level",
+            xaxis_title="Date",
+            showlegend=True
+        )
+        st.plotly_chart(fig)
+
+def submit_report():
+    st.title("Submit Detailed Report")
+
+    with st.form("report_form"):
+        # Basic Information
+        st.subheader("Basic Information")
+        incident_type = st.selectbox(
+            "Incident Type",
+            ["Malware", "Phishing", "Data Breach", "DDoS", "Unauthorized Access", 
+             "Social Engineering", "System Vulnerability", "Other"]
+        )
+
+        severity = st.select_slider(
+            "Severity",
+            options=["Low", "Medium", "High", "Critical"],
+            value="Medium"
+        )
+
+        # Detailed Information
+        st.subheader("Incident Details")
+        description = st.text_area(
+            "Description",
+            placeholder="Provide a detailed description of the incident..."
+        )
+
+        impact = st.text_area(
+            "Business Impact",
+            placeholder="Describe the impact on business operations..."
+        )
+
+        # Technical Details
+        st.subheader("Technical Details")
+        col1, col2 = st.columns(2)
+        with col1:
+            affected_systems = st.multiselect(
+                "Affected Systems",
+                ["Network", "Servers", "Workstations", "Mobile Devices", 
+                 "Cloud Services", "Applications", "Data Storage"]
+            )
+        with col2:
+            indicators = st.multiselect(
+                "Indicators of Compromise",
+                ["Suspicious Network Traffic", "Unusual Login Attempts",
+                 "Modified Files", "Unknown Processes", "System Alerts"]
+            )
+
+        # Submit button
+        submitted = st.form_submit_button("Submit Report")
+
+        if submitted:
+            incident_id = generate_incident_id()
+            new_incident = {
+                'id': incident_id,
+                'type': incident_type,
+                'severity': severity,
+                'description': f"""
+                Description: {description}
+
+                Business Impact: {impact}
+
+                Affected Systems: {', '.join(affected_systems)}
+                Indicators: {', '.join(indicators)}
+                """.strip(),
+                'status': 'Open',
+                'reported_by': st.session_state.username,
+                'reported_date': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                'assigned_to': '',
+                'resolution': ''
+            }
+
+            save_incident(new_incident)
+            st.success(f"Report submitted successfully. Incident ID: {incident_id}")
+            send_notification(f"New detailed report submitted: {incident_id}")
 
 def show_dashboard():
     st.title("Dashboard")
@@ -201,6 +306,40 @@ def user_management():
     st.title("User Management")
     users = load_users()
     st.dataframe(users[['username', 'is_admin']])
+
+def main_page():
+    st.sidebar.title(f"Welcome, {st.session_state.username}")
+
+    if st.sidebar.button("Logout"):
+        st.session_state.authenticated = False
+        st.session_state.username = None
+        st.rerun()
+
+    # Updated navigation
+    if not is_admin(st.session_state.username):
+        page = st.sidebar.radio(
+            "Navigation",
+            ["My Dashboard", "Submit Report", "My Incidents", "Reports"]
+        )
+    else:
+        page = st.sidebar.radio(
+            "Navigation",
+            ["Dashboard", "All Incidents", "User Management", "Reports"]
+        )
+
+    if page == "My Dashboard":
+        show_user_dashboard()
+    elif page == "Dashboard":
+        show_dashboard()
+    elif page == "Submit Report":
+        submit_report()
+    elif page == "My Incidents" or page == "All Incidents":
+        show_incidents(show_all=page=="All Incidents")
+    elif page == "User Management":
+        user_management()
+    elif page == "Reports":
+        show_reports()
+
 
 # Main app logic
 if not st.session_state.authenticated:
