@@ -177,8 +177,28 @@ def submit_report():
                 'resolution': ''
             }
 
+            # Extract potential indicators from description
+            words = description.split()
+            threat_intel = {}
+            for word in words:
+                if any(x in word.lower() for x in ['http://', 'https://', '.com', '.net', '.org']) or \
+                   all(c.isdigit() or c == '.' for c in word):
+                    intel = get_threat_intel(word)
+                    if 'error' not in intel:
+                        threat_intel[word] = intel
+
+            new_incident['threat_intel'] = threat_intel
             save_incident(new_incident)
+            
             st.success(f"Report submitted successfully. Incident ID: {incident_id}")
+            if threat_intel:
+                st.warning("⚠️ Threat Intelligence Found:")
+                for indicator, intel in threat_intel.items():
+                    st.write(f"**{indicator}**:")
+                    st.write(f"- Malicious detections: {intel['malicious_count']}")
+                    st.write(f"- Suspicious detections: {intel['suspicious_count']}")
+                    st.write(f"- Reputation score: {intel['reputation_score']}")
+            
             send_notification(f"New detailed report submitted: {incident_id}")
 
 def show_dashboard():
