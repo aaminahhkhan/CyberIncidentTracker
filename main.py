@@ -297,10 +297,32 @@ def show_incidents(show_all=False):
                     index=current_assignment_index
                 )
 
-                if st.button("Update", key=f"update_{incident['id']}"):
+                # Comments section
+                st.write("---")
+                st.write("**Comments**")
+
+                if 'comments' not in incident:
+                    incident['comments'] = []
+
+                for comment in incident['comments']:
+                    st.text(f"{comment['user']} ({comment['timestamp']}): {comment['text']}")
+
+                new_comment = st.text_area("Add comment", key=f"comment_{incident['id']}")
+
+                if st.button("Update & Comment", key=f"update_{incident['id']}"):
                     updated_incident = incident.copy()
                     updated_incident['status'] = new_status
                     updated_incident['assigned_to'] = new_assignment
+
+                    if new_comment:
+                        if 'comments' not in updated_incident:
+                            updated_incident['comments'] = []
+                        updated_incident['comments'].append({
+                            'user': st.session_state.username,
+                            'timestamp': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                            'text': new_comment
+                        })
+
                     update_incident(updated_incident)
                     st.success("Incident updated successfully")
                     st.rerun()
