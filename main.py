@@ -5,7 +5,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 from auth import check_password, create_user, is_admin
 from database import load_incidents, save_incident, update_incident, load_users
-from utils import generate_incident_id, send_notification, format_datetime
+from utils import generate_incident_id, send_notification, format_datetime, get_threat_intel
 
 # Page configuration
 st.set_page_config(
