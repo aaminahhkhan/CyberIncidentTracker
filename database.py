@@ -14,7 +14,8 @@ def load_users():
 def save_user(user):
     """Save a new user to CSV"""
     users = load_users()
-    users = users.append(user, ignore_index=True)
+    new_user_df = pd.DataFrame([user])
+    users = pd.concat([users, new_user_df], ignore_index=True)
     users.to_csv('data/users.csv', index=False)
 
 def load_incidents():
@@ -30,7 +31,8 @@ def load_incidents():
 def save_incident(incident):
     """Save a new incident to CSV"""
     incidents = load_incidents()
-    incidents = incidents.append(incident, ignore_index=True)
+    new_incident_df = pd.DataFrame([incident])
+    incidents = pd.concat([incidents, new_incident_df], ignore_index=True)
     incidents.to_csv('data/incidents.csv', index=False)
 
 def update_incident(incident):
