@@ -31,7 +31,8 @@ def load_incidents():
     if not os.path.exists('data/incidents.csv'):
         df = pd.DataFrame(columns=[
             'id', 'type', 'severity', 'description', 'status',
-            'reported_by', 'reported_date', 'assigned_to', 'resolution'
+            'reported_by', 'reported_date', 'assigned_to', 'resolution',
+            'priority', 'comments'
         ])
         df.to_csv('data/incidents.csv', index=False)
     return pd.read_csv('data/incidents.csv')

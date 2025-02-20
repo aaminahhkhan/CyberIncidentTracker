@@ -219,6 +219,11 @@ def submit_incident():
         "Severity",
         options=["Low", "Medium", "High", "Critical"]
     )
+    priority = st.select_slider(
+        "Priority",
+        options=["Low", "Medium", "High", "Critical"],
+        value="Medium"
+    )
 
     description = st.text_area("Description")
 
@@ -229,11 +234,13 @@ def submit_incident():
             'type': incident_type,
             'severity': severity,
             'description': description,
-            'status': 'Pending', # Changed initial status to 'Pending'
+            'status': 'Pending',
             'reported_by': st.session_state.username,
             'reported_date': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             'assigned_to': '',
-            'resolution': ''
+            'resolution': '',
+            'priority': priority,
+            'comments': []
         }
 
         save_incident(new_incident)
@@ -282,7 +289,7 @@ def show_incidents(show_all=False):
                 users = load_users()
                 user_list = [""] + list(users['username'])
                 current_assignment_index = user_list.index(incident['assigned_to']) if incident['assigned_to'] in user_list else 0
-                
+
                 new_assignment = st.selectbox(
                     "Assign To",
                     user_list,
