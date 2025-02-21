@@ -40,13 +40,16 @@ def login_page():
 
     with tab2:
         new_username = st.text_input("Username", key="reg_username")
+        email = st.text_input("Email", key="reg_email")
+        department = st.text_input("Department", key="reg_department")
+        phone = st.text_input("Phone Number", key="reg_phone")
         new_password = st.text_input("Password", type="password", key="reg_password")
         confirm_password = st.text_input("Confirm Password", type="password")
 
         if st.button("Register"):
             if new_password != confirm_password:
                 st.error("Passwords don't match")
-            elif create_user(new_username, new_password):
+            elif create_user(new_username, new_password, email, department, phone):
                 st.success("Registration successful! Please login.")
             else:
                 st.error("Username already exists")
