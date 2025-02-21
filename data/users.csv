@@ -1,4 +1,5 @@
-username,password,is_admin
-admin,8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918,True
-lonerr,451907fc75ca3a38ba5b6bf8fad7f512816652f095333dd780e323da5dde6689,False
-amina,2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824,False
+username,password,is_admin,email,department,phone,created_at,last_login
+admin,8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918,True,,,,,
+lonerr,451907fc75ca3a38ba5b6bf8fad7f512816652f095333dd780e323da5dde6689,False,,,,,
+amina,2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824,False,,,,,
+heyyo,494414ded24da13c451b13b424928821351c78fce49f93d9e1b55f102790c206,False,aaminahkhan144@gmail.com,IT Security,+92 326 7206288,2025-02-21 04:20:50,
