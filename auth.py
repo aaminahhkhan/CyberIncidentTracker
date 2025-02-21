@@ -25,10 +25,10 @@ def create_user(username, password, email, department="", phone=""):
     new_user = {
         'username': username,
         'password': hash_password(password),
+        'is_admin': False,
         'email': email,
         'department': department,
         'phone': phone,
-        'is_admin': False,
         'created_at': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         'last_login': None
     }
