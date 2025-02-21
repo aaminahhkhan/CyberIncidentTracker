@@ -15,7 +15,7 @@ def check_password(username, password):
         return user['password'] == hash_password(password)
     return False
 
-def create_user(username, password):
+def create_user(username, password, email, department="", phone=""):
     """Create a new user"""
     users = load_users()
     if username in users['username'].values:
@@ -24,7 +24,12 @@ def create_user(username, password):
     new_user = {
         'username': username,
         'password': hash_password(password),
-        'is_admin': False
+        'email': email,
+        'department': department,
+        'phone': phone,
+        'is_admin': False,
+        'created_at': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        'last_login': None
     }
     save_user(new_user)
     return True
