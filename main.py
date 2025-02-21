@@ -40,9 +40,13 @@ def login_page():
 
     with tab2:
         new_username = st.text_input("Username", key="reg_username")
-        email = st.text_input("Email", key="reg_email")
-        department = st.text_input("Department", key="reg_department")
-        phone = st.text_input("Phone Number", key="reg_phone")
+        email = st.text_input("Email", key="reg_email", placeholder="user@example.com")
+        department = st.selectbox(
+            "Department",
+            ["IT Security", "Network Operations", "Development", "Infrastructure", "Risk Management", "Operations", "Management"],
+            key="reg_department"
+        )
+        phone = st.text_input("Phone Number", key="reg_phone", placeholder="+XX-XXX-XXXXXXX", help="Format: +92-333-1234567")
         new_password = st.text_input("Password", type="password", key="reg_password")
         confirm_password = st.text_input("Confirm Password", type="password")
 
