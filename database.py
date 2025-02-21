@@ -7,16 +7,7 @@ os.makedirs('data', exist_ok=True)
 def load_users():
     """Load users from CSV file"""
     if not os.path.exists('data/users.csv'):
-        df = pd.DataFrame(columns=[
-            'username',     # Primary Key
-            'password',     # Hashed
-            'is_admin',     # Boolean
-            'email',        
-            'department',   
-            'phone',       
-            'created_at',   # Timestamp
-            'last_login'    # Timestamp
-        ])
+        df = pd.DataFrame(columns=['username', 'password', 'email', 'department', 'phone', 'is_admin', 'created_at', 'last_login'])
         df.to_csv('data/users.csv', index=False)
         # Create default admin user
         from auth import hash_password
