@@ -1,4 +1,5 @@
-git clone https://github.com/YOUR_USERNAME/cybersecurity-incident-management
+git clone https://github.com/aaminahhkhan/cybersecurity-incident-management
+
 cd cybersecurity-incident-management
 ```
 
